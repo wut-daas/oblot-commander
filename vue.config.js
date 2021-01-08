@@ -1,7 +1,7 @@
 module.exports = {
   pluginOptions: {
     electronBuilder: {
-      externals: ["serialport"]
-    }
-  }
-};
+      externals: ['serialport'],
+    },
+  },
+}
