@@ -1,7 +1,13 @@
 {
   "name": "oblot-viewer",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
+  "description": "GUI application to control embedded devices",
+  "author": {
+    "name": "Marek S. Łukasiewicz",
+    "email": "marek@lukasiewicz.tech"
+  },
+  "license": "GPL-3.0-only",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
