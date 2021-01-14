@@ -25,6 +25,8 @@
     <SimpleButton @click="disconnectSerial" :disabled="!connected">
       Disconnect
     </SimpleButton>
+    <hr class="mt-4 mb-4" />
+    <SerialTest />
   </div>
 </template>
 
@@ -35,9 +37,12 @@ import { useStore } from '../store'
 import { ActionType } from '@/store/actions'
 import { PortInfo } from 'serialport'
 
+import SerialTest from '@/components/SerialTest.vue'
+
 export default defineComponent({
   components: {
     SimpleButton,
+    SerialTest,
   },
   setup() {
     const store = useStore()
