@@ -1,10 +1,12 @@
 import { ActionTree, ActionContext } from 'vuex'
 import { state, State } from './state'
-import { Mutations } from './mutations'
+import { Mutations, MutationType } from './mutations'
 
 import SerialPort from 'serialport'
 import { PortInfo } from 'serialport'
-import { MutationType } from './mutations'
+
+import { MAVLinkModule, MAVLinkMessage } from '@ifrunistuttgart/node-mavlink'
+import { messageRegistry } from '@/assets/mavlink/message-registry'
 
 type AugmentedActionContext = {
   commit<K extends keyof Mutations>(
@@ -17,6 +19,7 @@ export enum ActionType {
   ConnectSerial = 'connectSerial',
   DisconnectSerial = 'disconnectSerial',
   ListPorts = 'listPorts',
+  SetupMavlink = 'setupMavlink',
 }
 
 export interface Actions {
@@ -28,6 +31,7 @@ export interface Actions {
     commit,
   }: AugmentedActionContext): Promise<boolean>
   [ActionType.ListPorts](): Promise<PortInfo[] | null>
+  [ActionType.SetupMavlink](): boolean
 }
 
 export const actions: ActionTree<State, State> & Actions = {
@@ -80,5 +84,23 @@ export const actions: ActionTree<State, State> & Actions = {
           else resolve(null)
         })
     })
+  },
+  [ActionType.SetupMavlink]() {
+    if (!state.serialPort) return false
+
+    const mav = new MAVLinkModule(messageRegistry)
+    state.mavLink = mav
+
+    state.serialPort.on('data', function(data: Buffer) {
+      mav.parse(data) //TODO: Enable timer_1 in mavlink-module.js when PCBs are fixed
+    })
+    mav.on('error', function(err: Error) {
+      console.warn('Error parsing MAVLink', err.name)
+    })
+    mav.on('message', function(message: MAVLinkMessage) {
+      console.log(message)
+    })
+
+    return true
   },
 }

@@ -20,6 +20,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@ifrunistuttgart/node-mavlink": "^0.1.2",
     "serialport": "^9.0.4",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",

@@ -19,12 +19,14 @@
         </option>
       </select>
     </p>
-    <SimpleButton @click="connectSerial" :disabled="!canConnect">
-      Connect
-    </SimpleButton>
-    <SimpleButton @click="disconnectSerial" :disabled="!connected">
-      Disconnect
-    </SimpleButton>
+    <p>
+      <SimpleButton @click="connectSerial" :disabled="!canConnect">
+        Connect
+      </SimpleButton>
+      <SimpleButton @click="disconnectSerial" :disabled="!connected">
+        Disconnect
+      </SimpleButton>
+    </p>
     <hr class="mt-4 mb-4" />
     <SerialTest />
   </div>
@@ -76,10 +78,16 @@ export default defineComponent({
     })
 
     const connectSerial = function() {
-      store.dispatch(ActionType.ConnectSerial, {
-        path: selectedSerial.value,
-        baud: selectedBaud.value,
-      })
+      store
+        .dispatch(ActionType.ConnectSerial, {
+          path: selectedSerial.value,
+          baud: selectedBaud.value,
+        })
+        .then(result => {
+          if (result === true) {
+            store.dispatch(ActionType.SetupMavlink, undefined)
+          }
+        })
     }
 
     const disconnectSerial = function() {

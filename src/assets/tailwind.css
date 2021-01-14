@@ -22,7 +22,4 @@
   a {
     @apply text-blue-500 underline;
   }
-  input {
-    @apply border-gray-800 rounded-sm;
-  }
 }
