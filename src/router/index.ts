@@ -5,12 +5,18 @@ import {
   RouteRecordRaw,
 } from 'vue-router'
 import Home from '../views/Home.vue'
+import Connect from '../views/Connect.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
     component: Home,
+  },
+  {
+    path: '/connect',
+    name: 'Connect',
+    component: Connect,
   },
   {
     path: '/about',
