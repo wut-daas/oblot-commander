@@ -19,24 +19,26 @@
         </option>
       </select>
     </p>
-    <button
-      @click="connectSerial"
-      class="inline-block mt-2 px-2 py-1 rounded-md bg-blue-500 text-white"
-    >
+    <SimpleButton @click="connectSerial" :disabled="!canConnect">
       Connect
-    </button>
+    </SimpleButton>
+    <SimpleButton @click="disconnectSerial" :disabled="!connected">
+      Disconnect
+    </SimpleButton>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from 'vue'
+import SimpleButton from '@/components/SimpleButton.vue'
 import { useStore } from '../store'
-
-import SerialPort from 'serialport'
-import { PortInfo } from 'serialport'
 import { ActionType } from '@/store/actions'
+import { PortInfo } from 'serialport'
 
 export default defineComponent({
+  components: {
+    SimpleButton,
+  },
   setup() {
     const store = useStore()
 
@@ -57,18 +59,26 @@ export default defineComponent({
 
     const ports = ref([] as PortInfo[])
     onMounted(() => {
-      SerialPort.list()
-        .then((listedPorts: PortInfo[]) => (ports.value = listedPorts))
-        .catch(err => console.log(err))
+      store.dispatch(ActionType.ListPorts, undefined).then(listedPorts => {
+        if (listedPorts) ports.value = listedPorts
+      })
+    })
+
+    const canConnect = computed(() => {
+      return (
+        !connected.value && selectedBaud.value && selectedSerial.value !== ''
+      )
     })
 
     const connectSerial = function() {
-      store
-        .dispatch(ActionType.ConnectSerial, {
-          path: selectedSerial.value,
-          baud: selectedBaud.value,
-        })
-        .then(result => console.log(result))
+      store.dispatch(ActionType.ConnectSerial, {
+        path: selectedSerial.value,
+        baud: selectedBaud.value,
+      })
+    }
+
+    const disconnectSerial = function() {
+      store.dispatch(ActionType.DisconnectSerial, undefined)
     }
 
     return {
@@ -77,7 +87,9 @@ export default defineComponent({
       connected,
       baudRates,
       ports,
+      canConnect,
       connectSerial,
+      disconnectSerial,
     }
   },
 })

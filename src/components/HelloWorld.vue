@@ -1,32 +1,16 @@
 <template>
   <div class="hello">
     <h3>{{ msg }}</h3>
-    <p v-for="port in ports" :key="port.path">{{ port.path }}</p>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
-
-import SerialPort from 'serialport'
-import { PortInfo } from 'serialport'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'HelloWorld',
   props: {
     msg: String,
-  },
-  setup() {
-    const ports = ref([] as PortInfo[])
-    onMounted(() => {
-      SerialPort.list()
-        .then((listedPorts: PortInfo[]) => (ports.value = listedPorts))
-        .catch(err => console.log(err))
-    })
-
-    return {
-      ports,
-    }
   },
 })
 </script>
