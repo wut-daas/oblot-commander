@@ -6,7 +6,7 @@ import SerialPort from 'serialport'
 import { PortInfo } from 'serialport'
 
 import { MAVLinkModule, MAVLinkMessage } from '@ifrunistuttgart/node-mavlink'
-import { messageRegistry } from '@/assets/mavlink/message-registry'
+import { messageRegistry } from '@/mavlink/message-registry'
 
 type AugmentedActionContext = {
   commit<K extends keyof Mutations>(
@@ -41,6 +41,9 @@ export const actions: ActionTree<State, State> & Actions = {
         payload.path,
         {
           baudRate: payload.baud,
+          dataBits: 8,
+          stopBits: 1,
+          parity: 'none',
         },
         err => {
           if (err) {
@@ -92,6 +95,7 @@ export const actions: ActionTree<State, State> & Actions = {
     state.mavLink = mav
 
     state.serialPort.on('data', function(data: Buffer) {
+      console.info(data)
       mav.parse(data) //TODO: Enable timer_1 in mavlink-module.js when PCBs are fixed
     })
     mav.on('error', function(err: Error) {
@@ -99,6 +103,18 @@ export const actions: ActionTree<State, State> & Actions = {
     })
     mav.on('message', function(message: MAVLinkMessage) {
       console.log(message)
+    })
+    mav.on('COMMAND_LONG', function(bytes: Buffer) {
+      if (state.serialPort) {
+        console.info('Sending command to serial', bytes)
+        const res = state.serialPort.write(bytes, err => {
+          if (err) console.error('Error writing command to serial', err)
+          else console.info('Written bytes')
+        })
+        console.log(res)
+      } else {
+        console.error('Attempted to send command without serial connection')
+      }
     })
 
     return true
