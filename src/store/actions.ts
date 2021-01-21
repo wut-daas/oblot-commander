@@ -95,8 +95,7 @@ export const actions: ActionTree<State, State> & Actions = {
     state.mavLink = mav
 
     state.serialPort.on('data', function(data: Buffer) {
-      console.info(data)
-      mav.parse(data) //TODO: Enable timer_1 in mavlink-module.js when PCBs are fixed
+      mav.parse(data)
     })
     mav.on('error', function(err: Error) {
       console.warn('Error parsing MAVLink', err.name)
@@ -106,12 +105,10 @@ export const actions: ActionTree<State, State> & Actions = {
     })
     mav.on('COMMAND_LONG', function(bytes: Buffer) {
       if (state.serialPort) {
-        console.info('Sending command to serial', bytes)
-        const res = state.serialPort.write(bytes, err => {
+        state.serialPort.write(bytes, err => {
           if (err) console.error('Error writing command to serial', err)
           else console.info('Written bytes')
         })
-        console.log(res)
       } else {
         console.error('Attempted to send command without serial connection')
       }
