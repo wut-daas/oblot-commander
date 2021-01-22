@@ -1,4 +1,4 @@
-# OBLOT Viewer
+# OBLOT Commander
 
 GUI application to control embedded devices
 
@@ -19,5 +19,5 @@ Use `node-mavlink` library from [DAAS fork](https://github.com/wut-daas/node-mav
 
 Because `electron-rebuild` produces correct module binary, and `electron-builder install-app-deps` creates a wrong one, you should (at least on Windows) deny Write acces to the following file, after `rebuild`:
 ```
-oblot-viewer\node_modules\@serialport\bindings\build\Release\bindings.node
+oblot-commander\node_modules\@serialport\bindings\build\Release\bindings.node
 ```
