@@ -28,7 +28,7 @@
       </SimpleButton>
     </p>
     <hr class="mt-4 mb-4" />
-    <SerialTest />
+    <UDPTest />
   </div>
 </template>
 
@@ -39,12 +39,12 @@ import { useStore } from '../store'
 import { ActionType } from '@/store/actions'
 import { PortInfo } from 'serialport'
 
-import SerialTest from '@/components/SerialTest.vue'
+import UDPTest from '@/components/UDPTest.vue'
 
 export default defineComponent({
   components: {
     SimpleButton,
-    SerialTest,
+    UDPTest,
   },
   setup() {
     const store = useStore()
