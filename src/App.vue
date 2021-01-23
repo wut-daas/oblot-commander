@@ -1,11 +1,18 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/connect">Connect</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view />
+  <Sidebar />
+  <router-view class="ml-16" />
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+import Sidebar from '@/components/Sidebar.vue'
+
+export default defineComponent({
+  components: {
+    Sidebar,
+  },
+})
+</script>
 
 <style>
 #app {
@@ -14,18 +21,10 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
 }
 </style>
