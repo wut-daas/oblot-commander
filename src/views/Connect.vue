@@ -29,6 +29,7 @@
     </p>
     <hr class="mt-4 mb-4" />
     <UDPTest />
+    <MavTest />
   </div>
 </template>
 
@@ -40,11 +41,13 @@ import { ActionType } from '@/store/actions'
 import { PortInfo } from 'serialport'
 
 import UDPTest from '@/components/UDPTest.vue'
+import MavTest from '@/components/MavTest.vue'
 
 export default defineComponent({
   components: {
     SimpleButton,
     UDPTest,
+    MavTest,
   },
   setup() {
     const store = useStore()

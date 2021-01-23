@@ -6,7 +6,7 @@ import SerialPort from 'serialport'
 import { PortInfo } from 'serialport'
 
 import { MAVLinkModule, MAVLinkMessage } from '@ifrunistuttgart/node-mavlink'
-import { messageRegistry } from '@/mavlink/message-registry'
+import { messageRegistry } from '@/assets/mavlink/message-registry'
 
 type AugmentedActionContext = {
   commit<K extends keyof Mutations>(
