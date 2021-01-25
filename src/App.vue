@@ -1,6 +1,6 @@
 <template>
   <Sidebar />
-  <router-view class="ml-16" />
+  <router-view class="ml-20 mr-4" />
 </template>
 
 <script lang="ts">
@@ -16,11 +16,12 @@ export default defineComponent({
 
 <style>
 #app {
+  @apply text-wut-black;
+
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+
   position: absolute;
   left: 0;
   right: 0;

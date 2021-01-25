@@ -20,6 +20,16 @@
     @apply mt-2;
   }
   a {
-    @apply text-blue-500 underline;
+    @apply text-wut-blue underline;
+  }
+  input[type="text"],
+  input[type="number"],
+  select {
+    @apply rounded-sm focus:border-wut-blue;
+  }
+  select { /* Fix double arrows when used with @tailwindcss/forms */
+    -moz-appearance: none; /* Firefox */
+    -webkit-appearance: none; /* Safari and Chrome */
+    appearance: none;
   }
 }

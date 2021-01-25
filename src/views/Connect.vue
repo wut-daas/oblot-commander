@@ -23,7 +23,11 @@
       <SimpleButton @click="connectSerial" :disabled="!canConnect">
         Connect
       </SimpleButton>
-      <SimpleButton @click="disconnectSerial" :disabled="!connected">
+      <SimpleButton
+        @click="disconnectSerial"
+        :disabled="!connected"
+        class="ml-3"
+      >
         Disconnect
       </SimpleButton>
     </p>

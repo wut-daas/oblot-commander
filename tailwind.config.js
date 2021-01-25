@@ -19,6 +19,16 @@ module.exports = {
         },
         'wut-blue': {
           DEFAULT: '#7896cf',
+          '50': '#eff5ff',
+          '100': '#d9e9fd',
+          '200': '#c3d6f3',
+          '300': '#a9c0e6',
+          '400': '#90aada',
+          '500': '#7896cf',
+          '600': '#6582ba',
+          '700': '#5470a6',
+          '800': '#405c90',
+          '900': '#2e497e',
         },
         'wut-gray': {
           DEFAULT: '#b4a0aa',
@@ -35,5 +45,5 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/forms')],
 }

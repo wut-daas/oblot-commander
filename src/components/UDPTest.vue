@@ -1,10 +1,10 @@
 <template>
   <div>
     <p>
-      <input v-model="sentText" />
+      <input v-model="sentText" type="text" />
       <br />
       <span>Port offset:</span>
-      <input v-model.number="portOffset" min="0" />
+      <input v-model.number="portOffset" min="0" type="number" class="mt-1" />
       <br />
       <SimpleButton @click="send" :disabled="sentText.length === 0">
         Send
