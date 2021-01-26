@@ -1,13 +1,10 @@
-import SerialPort from 'serialport'
-import { MAVLinkModule } from '@ifrunistuttgart/node-mavlink'
+import { MavConnection } from './mavconnection'
 
 export type State = {
-  serialPort: SerialPort | null
-  mavLink: MAVLinkModule | null
+  connection: MavConnection | null
 }
 export const state: State = {
   // Note: the serialport library internally uses some proxy,
   // so this property must be accessed directly, not through store
-  serialPort: null,
-  mavLink: null,
+  connection: null,
 }

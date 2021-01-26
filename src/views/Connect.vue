@@ -1,39 +1,41 @@
 <template>
   <div>
     <h3>Currently {{ connected ? 'connected' : 'disconnected' }}</h3>
-    <p>
-      Device:
-      <select v-model="selectedSerial">
-        <option disabled value="">Select serial device</option>
-        <option v-for="port in ports" :key="port.path">
-          {{ port.path }}
-        </option>
-      </select>
-    </p>
-    <p>
-      Baud rate:
-      <select v-model.number="selectedBaud" :disabled="selectedSerial === ''">
-        <option disabled value="">Select baud rate</option>
-        <option v-for="rate in baudRates" :key="rate">
-          {{ rate }}
-        </option>
-      </select>
-    </p>
-    <p>
-      <SimpleButton @click="connectSerial" :disabled="!canConnect">
-        Connect
-      </SimpleButton>
-      <SimpleButton
-        @click="disconnectSerial"
-        :disabled="!connected"
-        class="ml-3"
-      >
-        Disconnect
-      </SimpleButton>
-    </p>
-    <hr class="mt-4 mb-4" />
-    <UDPTest />
-    <MavTest />
+    <div v-if="selectedConnection === 'serial'">
+      <p>
+        Device:
+        <select v-model="selectedSerial">
+          <option disabled value="">Select serial device</option>
+          <option v-for="port in ports" :key="port.path">
+            {{ port.path }}
+          </option>
+        </select>
+      </p>
+      <p>
+        Baud rate:
+        <select v-model.number="selectedBaud" :disabled="selectedSerial === ''">
+          <option disabled value="">Select baud rate</option>
+          <option v-for="rate in baudRates" :key="rate">
+            {{ rate }}
+          </option>
+        </select>
+      </p>
+      <p>
+        <SimpleButton @click="connectSerial" :disabled="!canConnect">
+          Connect
+        </SimpleButton>
+        <SimpleButton
+          @click="disconnectSerial"
+          :disabled="!connected"
+          class="ml-3"
+        >
+          Disconnect
+        </SimpleButton>
+      </p>
+    </div>
+    <div v-if="availableConnections.length === 0">
+      <h3 class="text-wut-orange">No connections available</h3>
+    </div>
   </div>
 </template>
 
@@ -44,14 +46,9 @@ import { useStore } from '../store'
 import { ActionType } from '@/store/actions'
 import { PortInfo } from 'serialport'
 
-import UDPTest from '@/components/UDPTest.vue'
-import MavTest from '@/components/MavTest.vue'
-
 export default defineComponent({
   components: {
     SimpleButton,
-    UDPTest,
-    MavTest,
   },
   setup() {
     const store = useStore()
@@ -72,9 +69,29 @@ export default defineComponent({
     ])
 
     const ports = ref([] as PortInfo[])
+    const availableConnections = ref([] as string[])
+    const selectedConnection = computed(() => {
+      if (availableConnections.value.length > 0)
+        return availableConnections.value[0]
+      else return ''
+    })
     onMounted(() => {
-      store.dispatch(ActionType.ListPorts, undefined).then(listedPorts => {
-        if (listedPorts) ports.value = listedPorts
+      store.dispatch(ActionType.CheckAvailable, undefined).then(connections => {
+        if (connections) availableConnections.value = connections
+
+        for (const conn of connections) {
+          if (conn === 'serial') {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const SerialPort = require('serialport')
+            SerialPort.list()
+              .catch((err: Error) => {
+                console.error('Error listing ports', err)
+              })
+              .then((listedPorts: PortInfo[]) => {
+                if (listedPorts) ports.value = listedPorts
+              })
+          }
+        }
       })
     })
 
@@ -85,23 +102,22 @@ export default defineComponent({
     })
 
     const connectSerial = function() {
-      store
-        .dispatch(ActionType.ConnectSerial, {
-          path: selectedSerial.value,
-          baud: selectedBaud.value,
-        })
-        .then(result => {
-          if (result === true) {
-            store.dispatch(ActionType.SetupMavlink, undefined)
-          }
-        })
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const SerialConnectionModule = require('@/store/serialconnection')
+      const conn = new SerialConnectionModule.SerialConnection(
+        selectedSerial.value,
+        selectedBaud.value
+      )
+      store.dispatch(ActionType.Connect, conn)
     }
 
     const disconnectSerial = function() {
-      store.dispatch(ActionType.DisconnectSerial, undefined)
+      store.dispatch(ActionType.Disconnect, undefined)
     }
 
     return {
+      availableConnections,
+      selectedConnection,
       selectedSerial,
       selectedBaud,
       connected,

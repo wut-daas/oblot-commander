@@ -7,6 +7,6 @@ export type Getters = {
 
 export const getters: GetterTree<State, State> & Getters = {
   isConnected(state) {
-    return state.serialPort !== null
+    return state.connection !== null
   },
 }
