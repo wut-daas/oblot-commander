@@ -1,4 +1,4 @@
-import { MavConnection } from './mavconnection'
+import { ConnectionStatus, MavConnection } from './mavconnection'
 import SerialPort from 'serialport'
 
 export class SerialConnection extends MavConnection {
@@ -6,16 +6,19 @@ export class SerialConnection extends MavConnection {
   constructor(path: string, baudRate: number) {
     super()
     this.serialPort = new SerialPort(path, { baudRate: baudRate })
+    this.serialPort.on('open', () => this.waitHeartbeat())
+
     this.serialPort.on('data', (data: Buffer) => {
       this.mav.parse(data)
     })
   }
 
   write(data: Buffer): void {
-    throw new Error('Method not implemented.')
+    this.serialPort.write(data)
   }
 
   close(): Promise<boolean> {
+    this.status.value = ConnectionStatus.Closing
     return new Promise(resolve => {
       this.serialPort.close(err => {
         if (err) {

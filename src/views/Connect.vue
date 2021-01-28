@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>Currently {{ connected ? 'connected' : 'disconnected' }}</h3>
+    <h3>{{ statusText }}</h3>
     <div v-if="selectedConnection === 'serial'">
       <p>
         Device:
@@ -26,7 +26,7 @@
         </SimpleButton>
         <SimpleButton
           @click="disconnectSerial"
-          :disabled="!connected"
+          :disabled="!connectionExisting"
           class="ml-3"
         >
           Disconnect
@@ -45,6 +45,7 @@ import SimpleButton from '@/components/SimpleButton.vue'
 import { useStore } from '../store'
 import { ActionType } from '@/store/actions'
 import { PortInfo } from 'serialport'
+import { ConnectionStatus } from '@/store/mavconnection'
 
 export default defineComponent({
   components: {
@@ -55,7 +56,24 @@ export default defineComponent({
 
     const selectedSerial = ref('')
     const selectedBaud = ref(0)
-    const connected = computed(() => store.getters.isConnected)
+    const connectionExisting = computed(() => store.state.connection !== null)
+
+    const statusText = computed(() => {
+      switch (store.getters.connectionStatus) {
+        case ConnectionStatus.Disconnected:
+          return 'Disconnected'
+        case ConnectionStatus.WaitingForHeartbeat:
+          return 'Waiting for heartbeat'
+        case ConnectionStatus.Connected:
+          return 'Connected'
+        case ConnectionStatus.TimedOut:
+          return 'Heartbeat timed out'
+        case ConnectionStatus.Closing:
+          return 'Closing connection'
+        default:
+          return `Unexpected state: ${store.getters.connectionStatus}`
+      }
+    })
 
     const baudRates = ref([
       9600,
@@ -97,7 +115,9 @@ export default defineComponent({
 
     const canConnect = computed(() => {
       return (
-        !connected.value && selectedBaud.value && selectedSerial.value !== ''
+        !connectionExisting.value &&
+        selectedBaud.value &&
+        selectedSerial.value !== ''
       )
     })
 
@@ -116,11 +136,12 @@ export default defineComponent({
     }
 
     return {
+      statusText,
+      connectionExisting,
       availableConnections,
       selectedConnection,
       selectedSerial,
       selectedBaud,
-      connected,
       baudRates,
       ports,
       canConnect,
