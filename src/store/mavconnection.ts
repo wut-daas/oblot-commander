@@ -15,6 +15,7 @@ export abstract class MavConnection {
   mav: MAVLinkModule
   heartbeatTimer: NodeJS.Timeout | null
   lastHeartbeat: Heartbeat | null
+  // Ref is required here to make the property reactive because the store is initialized with null connection
   status: Ref<ConnectionStatus>
   constructor() {
     this.status = ref(ConnectionStatus.Disconnected)
