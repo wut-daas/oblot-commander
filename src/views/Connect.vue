@@ -99,6 +99,7 @@ export default defineComponent({
 
         for (const conn of connections) {
           if (conn === 'serial') {
+            // Must be conditionally imported via var-require, crashes browser application otherwise
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const SerialPort = require('serialport')
             SerialPort.list()
@@ -122,6 +123,7 @@ export default defineComponent({
     })
 
     const connectSerial = function() {
+      // Must be conditionally imported via var-require, crashes browser application otherwise
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const SerialConnectionModule = require('@/store/serialconnection')
       const conn = new SerialConnectionModule.SerialConnection(
