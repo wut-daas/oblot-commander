@@ -6,7 +6,7 @@
       class="mx-auto grid grid-cols-2 gap-3 max-w-md"
     >
       <h3 class="col-span-2 text-center">Serial device</h3>
-      <p class="text-right text-lg">
+      <p class="text-right">
         Device:
       </p>
       <select v-model="selectedSerial">
@@ -61,8 +61,8 @@ export default defineComponent({
 
     const statusText = computed(() => {
       switch (store.getters.connectionStatus) {
-        case ConnectionStatus.Disconnected:
-          return 'Disconnected'
+        case ConnectionStatus.NotConnected:
+          return 'Not connected'
         case ConnectionStatus.WaitingForHeartbeat:
           return 'Waiting for heartbeat'
         case ConnectionStatus.Connected:
@@ -71,6 +71,8 @@ export default defineComponent({
           return 'Heartbeat timed out'
         case ConnectionStatus.Closing:
           return 'Closing connection'
+        case ConnectionStatus.Disconnected:
+          return 'Device disconnected'
         default:
           return `Unexpected state: ${store.getters.connectionStatus}`
       }
@@ -96,7 +98,7 @@ export default defineComponent({
         return availableConnections.value[0]
       else return ''
     })
-    onMounted(() => {
+    const refreshPorts = function() {
       store.dispatch(ActionType.CheckAvailable, undefined).then(connections => {
         if (connections) availableConnections.value = connections
 
@@ -115,7 +117,8 @@ export default defineComponent({
           }
         }
       })
-    })
+    }
+    onMounted(() => refreshPorts())
 
     const canConnect = computed(() => {
       return (
@@ -149,6 +152,7 @@ export default defineComponent({
       selectedSerial,
       selectedBaud,
       baudRates,
+      refreshPorts,
       ports,
       canConnect,
       connectSerial,

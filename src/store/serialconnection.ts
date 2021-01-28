@@ -7,6 +7,10 @@ export class SerialConnection extends MavConnection {
     super()
     this.serialPort = new SerialPort(path, { baudRate: baudRate })
     this.serialPort.on('open', () => this.waitHeartbeat())
+    this.serialPort.on(
+      'close',
+      () => (this.status.value = ConnectionStatus.Disconnected)
+    )
 
     this.serialPort.on('data', (data: Buffer) => {
       this.mav.parse(data)
@@ -18,16 +22,26 @@ export class SerialConnection extends MavConnection {
   }
 
   close(): Promise<boolean> {
-    this.status.value = ConnectionStatus.Closing
     return new Promise(resolve => {
-      this.serialPort.close(err => {
-        if (err) {
-          console.error('Error closing port', err)
-          resolve(false)
-        } else {
-          resolve(true)
-        }
-      })
+      if (this.status.value === ConnectionStatus.Disconnected) {
+        resolve(true)
+      } else {
+        this.status.value = ConnectionStatus.Closing
+        this.serialPort.close(err => {
+          if (err) {
+            if (err.message === 'Port is not open') {
+              // Ideally, this wouldn't happen, but closing succeeded
+              console.warn('Attempted to close already closed port')
+              resolve(true)
+            } else {
+              console.error('Error closing port', err)
+              resolve(false)
+            }
+          } else {
+            resolve(true)
+          }
+        })
+      }
     })
   }
 }

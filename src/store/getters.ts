@@ -15,7 +15,7 @@ export const getters: GetterTree<State, State> & Getters = {
     )
   },
   connectionStatus(state) {
-    if (state.connection === null) return ConnectionStatus.Disconnected
+    if (state.connection === null) return ConnectionStatus.NotConnected
     else {
       // Typescript doesn't know that Vue will unpack this value, this way the reactivity "just works"
       return (state.connection.status as unknown) as ConnectionStatus
