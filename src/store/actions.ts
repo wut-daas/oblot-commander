@@ -9,7 +9,7 @@ type AugmentedActionContext = {
     key: K,
     payload: Parameters<Mutations[K]>[1]
   ): ReturnType<Mutations[K]>
-} & Omit<ActionContext<State, State>, 'commit'>
+} & Omit<ActionContext<State, State>, 'commit' | 'state'>
 
 export enum ActionType {
   CheckAvailable = 'checkAvailable',
@@ -20,7 +20,7 @@ export enum ActionType {
 export interface Actions {
   [ActionType.CheckAvailable](): Promise<string[]>
   [ActionType.Connect](
-    { commit }: AugmentedActionContext,
+    { commit, rootState }: AugmentedActionContext,
     connection: MavConnection
   ): void
   [ActionType.Disconnect]({ commit }: AugmentedActionContext): Promise<boolean>
@@ -38,14 +38,14 @@ export const actions: ActionTree<State, State> & Actions = {
       resolve(connections)
     })
   },
-  [ActionType.Connect]({ commit }, connection) {
+  [ActionType.Connect]({ commit, rootState }, connection) {
     commit(MutationType.SetConnection, connection)
 
     connection.mav.on('error', function(err: Error) {
-      console.warn('Error parsing MAVLink', err.name)
+      rootState.messageBus.handleMavError(err)
     })
     connection.mav.on('message', function(message: MAVLinkMessage) {
-      console.log(message)
+      rootState.messageBus.handleMessage(message)
     })
   },
   [ActionType.Disconnect]({ commit }) {
