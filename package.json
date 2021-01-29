@@ -9,7 +9,7 @@
   },
   "license": "GPL-3.0-only",
   "scripts": {
-    "install": "node src/tools/install-mavlink.js",
+    "install": "node src/tools/install-mavlink.js && node src/tools/define-mavlink.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
