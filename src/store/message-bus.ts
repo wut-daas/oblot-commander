@@ -1,3 +1,4 @@
+import { Heartbeat } from '@/assets/mavlink/messages/heartbeat'
 import { StrictMessages } from '@/assets/mavlink/strict-messages'
 import { MAVLinkMessage } from '@ifrunistuttgart/node-mavlink'
 import { EventEmitter } from 'events'
@@ -25,7 +26,9 @@ export class MessageBus extends EventEmitter {
 
   handleMessage(msg: MAVLinkMessage): void {
     const name = msg._message_name as keyof BusEvents
-    this.emit(name, msg as BusEvents[typeof name])
+    this.emit(name, msg as Heartbeat) // need a type from StrictMessages here to keep Typescript happy.
+    // StrictMessages by design do not contain a generic message,
+    // and Heartbeat must be supported in every dialect anyway
   }
 
   handleMavError(err: Error): void {

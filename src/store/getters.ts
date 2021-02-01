@@ -1,3 +1,4 @@
+import { unref } from 'vue'
 import { GetterTree } from 'vuex'
 import { ConnectionStatus } from './mavconnection'
 import { State } from './state'
@@ -11,14 +12,13 @@ export const getters: GetterTree<State, State> & Getters = {
   isConnected(state) {
     return (
       state.connection !== null &&
-      state.connection.status.value === ConnectionStatus.Connected
+      unref(state.connection.status) === ConnectionStatus.Connected
     )
   },
   connectionStatus(state) {
     if (state.connection === null) return ConnectionStatus.NotConnected
     else {
-      // Typescript doesn't know that Vue will unpack this value, this way the reactivity "just works"
-      return (state.connection.status as unknown) as ConnectionStatus
+      return unref(state.connection.status)
     }
   },
 }

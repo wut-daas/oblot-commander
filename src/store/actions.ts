@@ -3,6 +3,7 @@ import { state, State } from './state'
 import { Mutations, MutationType } from './mutations'
 import { MavConnection } from './mavconnection'
 import { MAVLinkMessage } from '@ifrunistuttgart/node-mavlink'
+import { ParamRequestList } from '@/assets/mavlink/messages/param-request-list'
 
 type AugmentedActionContext = {
   commit<K extends keyof Mutations>(
@@ -15,6 +16,8 @@ export enum ActionType {
   CheckAvailable = 'checkAvailable',
   Connect = 'connect',
   Disconnect = 'disconnect',
+  RegisterParams = 'registerParams',
+  RefreshParams = 'refreshParams',
 }
 
 export interface Actions {
@@ -24,6 +27,8 @@ export interface Actions {
     connection: MavConnection
   ): void
   [ActionType.Disconnect]({ commit }: AugmentedActionContext): Promise<boolean>
+  [ActionType.RegisterParams]({ rootState }: AugmentedActionContext): void
+  [ActionType.RefreshParams]({ rootState }: AugmentedActionContext): void
 }
 
 export const actions: ActionTree<State, State> & Actions = {
@@ -63,5 +68,18 @@ export const actions: ActionTree<State, State> & Actions = {
         })
       }
     })
+  },
+  [ActionType.RegisterParams]({ rootState }) {
+    if (!rootState.parameters.registered) {
+      rootState.messageBus.on('PARAM_VALUE', msg =>
+        rootState.parameters.handleParamValue(msg)
+      )
+      rootState.parameters.registered = true
+    }
+  },
+  [ActionType.RefreshParams]({ rootState }) {
+    // TODO: request not received parameters
+    const msg = new ParamRequestList(0, 0) // broadcast
+    rootState.connection?.send(msg)
   },
 }
