@@ -18,6 +18,7 @@ export enum ActionType {
   Disconnect = 'disconnect',
   RegisterParams = 'registerParams',
   RefreshParams = 'refreshParams',
+  WriteParams = 'writeParams',
 }
 
 export interface Actions {
@@ -29,6 +30,7 @@ export interface Actions {
   [ActionType.Disconnect]({ commit }: AugmentedActionContext): Promise<boolean>
   [ActionType.RegisterParams]({ rootState }: AugmentedActionContext): void
   [ActionType.RefreshParams]({ rootState }: AugmentedActionContext): void
+  [ActionType.WriteParams]({ rootState }: AugmentedActionContext): void
 }
 
 export const actions: ActionTree<State, State> & Actions = {
@@ -81,5 +83,15 @@ export const actions: ActionTree<State, State> & Actions = {
     // TODO: request not received parameters
     const msg = new ParamRequestList(0, 0) // broadcast
     rootState.connection?.send(msg)
+  },
+  [ActionType.WriteParams]({ rootState }) {
+    // TODO: retry until all are set
+    const msgs = rootState.parameters.getUpdateMessages()
+    for (let i = 0; i < msgs.length; i++) {
+      rootState.connection?.send(msgs[i])
+      console.debug(
+        `setting ${msgs[i].param_id} to ${msgs[i].param_value} of type ${msgs[i].param_type}`
+      )
+    }
   },
 }

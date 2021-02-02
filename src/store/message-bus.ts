@@ -29,6 +29,10 @@ export class MessageBus extends EventEmitter {
     this.emit(name, msg as Heartbeat) // need a type from StrictMessages here to keep Typescript happy.
     // StrictMessages by design do not contain a generic message,
     // and Heartbeat must be supported in every dialect anyway
+
+    if (name !== 'HEARTBEAT' && name !== 'OBLOT_DYNO_FORCE') {
+      console.debug('handleMessage', msg)
+    }
   }
 
   handleMavError(err: Error): void {

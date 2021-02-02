@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { MavParamType } from '@/assets/mavlink/enums/mav-param-type'
+import { ParamSet } from '@/assets/mavlink/messages/param-set'
 import { ParamValue } from '@/assets/mavlink/messages/param-value'
 import { ref, Ref, unref } from 'vue'
 
@@ -54,6 +56,27 @@ export class ParamBuffer {
     }
     params[msg.param_index].id = msg.param_id
     params[msg.param_index].remoteValue = msg.param_value
+    if (params[msg.param_index].localValue === null)
+      params[msg.param_index].localValue = msg.param_value
     params[msg.param_index].paramType = msg.param_type
+  }
+
+  getUpdateMessages(): ParamSet[] {
+    const msgs = [] as ParamSet[]
+    const params = unref(this.params)
+    for (let i = 0; i < params.length; i++) {
+      const p = params[i]
+      if (p.localValue !== p.remoteValue && p.localValue !== null) {
+        const msg = new ParamSet(0, 0) // broadcast
+        msg.param_id = p.id
+        msg.param_value = p.localValue
+        msg.param_type =
+          p.paramType !== null
+            ? p.paramType
+            : MavParamType.MAV_PARAM_TYPE_REAL32
+        msgs.push(msg)
+      }
+    }
+    return msgs
   }
 }

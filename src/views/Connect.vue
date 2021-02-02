@@ -6,7 +6,7 @@
       class="mx-auto grid grid-cols-2 gap-3 max-w-md"
     >
       <h3 class="col-span-2 text-center">Serial device</h3>
-      <p class="text-right">
+      <p class="text-right text-lg">
         Device:
       </p>
       <select v-model="selectedSerial">
