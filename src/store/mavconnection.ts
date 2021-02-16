@@ -16,6 +16,7 @@ export abstract class MavConnection {
   mav: MAVLinkModule
   heartbeatTimer: NodeJS.Timeout | null
   lastHeartbeat: Heartbeat | null
+  verbose = false
   // Ref is required here to make the property reactive because the store is initialized with null connection
   status: Ref<ConnectionStatus>
   constructor() {
@@ -50,6 +51,10 @@ export abstract class MavConnection {
   }
 
   send(message: MAVLinkMessage): void {
+    if (this.verbose) {
+      console.debug('sendMessage', message)
+    }
+
     this.write(this.mav.pack([message]))
   }
 }

@@ -85,10 +85,16 @@ export const actions: ActionTree<State, State> & Actions = {
     rootState.connection?.send(msg)
   },
   [ActionType.WriteParams]({ rootState }) {
-    // TODO: retry until all are set
     const msgs = rootState.parameters.getUpdateMessages()
     for (let i = 0; i < msgs.length; i++) {
-      rootState.connection?.send(msgs[i])
+      rootState.messageBus.sendReliable(
+        () => rootState.connection?.send(msgs[i]),
+        {
+          messageName: 'PARAM_VALUE',
+          fieldValues: [['param_id', msgs[i].param_id]],
+        }
+      )
+
       console.debug(
         `setting ${msgs[i].param_id} to ${msgs[i].param_value} of type ${msgs[i].param_type}`
       )
