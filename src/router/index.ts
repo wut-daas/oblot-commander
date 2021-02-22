@@ -8,6 +8,7 @@ import Home from '../views/Home.vue'
 import Connect from '../views/Connect.vue'
 import About from '../views/About.vue'
 import Parameters from '../views/Parameters.vue'
+import Plot from '../views/Plot.vue'
 
 export const routes: Array<AppRouteRecord> = [
   {
@@ -26,6 +27,12 @@ export const routes: Array<AppRouteRecord> = [
     name: 'Param',
     component: Parameters,
     shortcut: 'P',
+  },
+  {
+    path: '/plot',
+    name: 'Plot',
+    component: Plot,
+    shortcut: 'T',
   },
   {
     path: '/about',

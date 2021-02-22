@@ -1,5 +1,5 @@
 <template>
-  <nav class="absolute min-h-full w-16 flex flex-col bg-wut-black">
+  <nav class="fixed min-h-full w-16 flex flex-col bg-wut-black">
     <div
       v-for="route in appRoutes"
       :key="route.path"
